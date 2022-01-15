@@ -22,6 +22,16 @@ module.exports = {
                 named: "never"
             }
         ],
-        quotes: ["error", "double", { allowTemplateLiterals: true }]
+        quotes: ["error", "double", { allowTemplateLiterals: true }],
+        "comma-dangle": [
+            "error",
+            {
+                arrays: "never",
+                objects: "only-multiline",
+                imports: "never",
+                exports: "never",
+                functions: "never"
+            }
+        ]
     }
 };

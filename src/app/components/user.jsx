@@ -1,60 +1,54 @@
-import React from "react";
-import Qualitie from "./qualitie";
-import Bookmark from "./bookmark";
+import React, { useState, useEffect } from "react";
+import api from "../api";
 import PropTypes from "prop-types";
 
-const User = ({
-    _id,
-    name,
-    qualities,
-    profession,
-    completedMeetings,
-    rate,
-    bookmark,
-    rest
-}) => {
-    return (
-        <tr>
-            <td>{name}</td>
-            <td>
-                {qualities.map((item) => (
-                    <Qualitie {...item} key={"qualities_" + item._id} />
-                ))}
-            </td>
-            <td>{profession.name}</td>
-            <td>{completedMeetings}</td>
-            <td>{rate}</td>
-            <td>
-                {
-                    <Bookmark
-                        status={bookmark}
-                        {...rest}
-                        id={_id}
-                        key={"bookmark_" + _id}
-                    />
-                }
-            </td>
-            <td>
-                <button
-                    className="btn btn-danger"
-                    onClick={() => rest.onDelete(_id)}
-                >
-                    Удалить
-                </button>
-            </td>
-        </tr>
-    );
-};
+const User = ({ userId, history }) => {
+    const handleExit = () => {
+        history.replace("/users");
+    };
 
+    function getCode({
+        _id,
+        name,
+        profession,
+        qualities,
+        completedMeetings,
+        rate
+    }) {
+        return (
+            <div>
+                <h2>{name}</h2>
+                <h2>{"Профессия: " + profession.name}</h2>
+                <div>
+                    {qualities.map((quality) => (
+                        <span
+                            key={quality._id}
+                            className={`m-1 badge bg-${quality.color}`}
+                        >
+                            {quality.name}
+                        </span>
+                    ))}
+                    <br />
+                    <span>{"Количество встреч :" + completedMeetings}</span>
+                    <br />
+                    <span>{"Рейтинг: " + rate}</span>
+                </div>
+
+                <button onClick={() => handleExit()}>Все пользователи</button>
+            </div>
+        );
+    }
+    const [user, setUser] = useState();
+
+    useEffect(() => {
+        api.users.getById(userId).then((data) => setUser(data));
+    }, []);
+
+    return <>{user ? <>{getCode(user)}</> : "Loading"}</>;
+};
 User.propTypes = {
-    _id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    qualities: PropTypes.array.isRequired,
-    profession: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-    completedMeetings: PropTypes.number.isRequired,
-    rate: PropTypes.number.isRequired,
-    bookmark: PropTypes.bool.isRequired,
-    rest: PropTypes.object.isRequired
+    userId: PropTypes.string.isRequired,
+    history: PropTypes.object
 };
 
 export default User;

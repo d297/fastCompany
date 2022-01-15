@@ -3,40 +3,48 @@ import PropTypes from "prop-types";
 
 const GroupList = ({
     items,
-    valueProperty,
     contentProperty,
-    onItemSelect,
+    valueProperty,
+    onItemsSelect,
     selectedItem
 }) => {
-    const checkFormatItems = (items) => {
-        if (Array.isArray(items)) {
-            console.log(Array.isArray(items));
-            return items;
-        }
-        console.log(typeof items);
-        return Object.values(items);
-    };
-    const checkedData = checkFormatItems(items);
-    console.log("valueProperty", valueProperty);
-    console.log("contentProperty", contentProperty);
-    console.log("selectedItem", selectedItem);
-    console.log(checkedData);
+    if (Array.isArray(items)) {
+        return (
+            <ul className="list-group">
+                {items.map((item) => (
+                    <li
+                        key={item[valueProperty]}
+                        className={
+                            "list-group-item" +
+                            (item === selectedItem ? " active" : "")
+                        }
+                        onClick={() => onItemsSelect(item)}
+                        role="button"
+                    >
+                        {item[contentProperty]}
+                    </li>
+                ))}
+            </ul>
+        );
+    }
     return (
-        <ul className="list-group">
-            {checkedData.map((item) => (
-                <li
-                    className={
-                        "list-group-item" +
-                        (item === selectedItem ? " active" : "")
-                    }
-                    key={item._id}
-                    onClick={() => onItemSelect(item)}
-                    role={"button"}
-                >
-                    {item.name}
-                </li>
-            ))}
-        </ul>
+        <>
+            <ul className="list-group">
+                {Object.keys(items).map((item) => (
+                    <li
+                        key={items[item][valueProperty]}
+                        className={
+                            "list-group-item" +
+                            (items[item] === selectedItem ? " active" : "")
+                        }
+                        onClick={() => onItemsSelect(items[item])}
+                        role="button"
+                    >
+                        {items[item][contentProperty]}
+                    </li>
+                ))}
+            </ul>
+        </>
     );
 };
 
@@ -47,9 +55,9 @@ GroupList.defaultProps = {
 
 GroupList.propTypes = {
     items: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-    contentProperty: PropTypes.string.isRequired,
     valueProperty: PropTypes.string.isRequired,
-    onItemSelect: PropTypes.func,
+    contentProperty: PropTypes.string.isRequired,
+    onItemsSelect: PropTypes.func,
     selectedItem: PropTypes.object
 };
 
