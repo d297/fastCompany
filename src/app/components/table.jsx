@@ -4,18 +4,15 @@ import TableBody from "./tableBody";
 import PropTypes from "prop-types";
 
 const Table = ({ onSort, selectedSort, columns, data, children }) => {
-    console.log("Children - ", children);
     return (
-        <>
-            <table className="table">
-                {children || (
-                    <>
-                        <TableHeader {...{ onSort, selectedSort, columns }} />
-                        <TableBody {...{ columns, data }} />
-                    </>
-                )}
-            </table>
-        </>
+        <table className="table">
+            {children || (
+                <>
+                    <TableHeader {...{ onSort, selectedSort, columns }} />
+                    <TableBody {...{ columns, data }} />
+                </>
+            )}
+        </table>
     );
 };
 Table.propTypes = {

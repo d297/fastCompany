@@ -5,7 +5,6 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const toogleShowPassword = () => {
-        console.log("pass");
         setShowPassword((prevState) => !prevState);
     };
     const getInputClasses = () => {
