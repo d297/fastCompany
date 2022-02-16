@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../api";
+import api from "../../../../api";
 import PropTypes from "prop-types";
 
 const User = ({ userId, history }) => {

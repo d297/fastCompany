@@ -2,42 +2,24 @@ export function validator(data, config) {
     const errors = {};
     function validate(validateMethod, data, config) {
         let statusValidate;
+        const emailRegExp = /^\S+@\S+\.\S+$/g;
+        const passwordRegExp = /[A-Z]+/g;
+        const digitRegExp = /\d+/g;
         switch (validateMethod) {
-            case "isRequired": {
-                if (typeof data === "boolean") {
-                    statusValidate = !data;
-                } else if (typeof data === "object") {
-                    statusValidate = data === "";
-                } else {
-                    statusValidate = data.trim() === "";
-                }
-
+            case "isRequired":
+                statusValidate = data.trim() === "";
                 break;
-            }
-            case "isEmail": {
-                const emailRegExp = /^\S+@\S+\.\S+$/g;
+            case "isEmail":
                 statusValidate = !emailRegExp.test(data);
                 break;
-            }
-            case "isCapitalSymbol": {
-                const capitalRegExp = /[A-Z]+/g;
-                statusValidate = !capitalRegExp.test(data);
+            case "isCapitalSymbol":
+                statusValidate = !passwordRegExp.test(data);
                 break;
-            }
-            case "isContainDigit": {
-                const digitRegExp = /\d+/g;
+            case "isContainDigit":
                 statusValidate = !digitRegExp.test(data);
                 break;
-            }
-            case "min": {
+            case "min":
                 statusValidate = data.length < config.value;
-                break;
-            }
-            case "noQqual": {
-                statusValidate = data.length === 0;
-                break;
-            }
-            default:
                 break;
         }
         if (statusValidate) return config.message;

@@ -1,18 +1,23 @@
 import React from "react";
-import Users from "../components/users";
-import User from "../components/user";
-import PropTypes from "prop-types";
-
-const UsersList = ({ match, history }) => {
-    const userId = match.params.userId;
-
+import { useParams } from "react-router-dom";
+import UserPage from "../components/page/userPage";
+import UsersListPage from "../components/page/usersListPage";
+import Edit from "../components/page/editData";
+const Users = () => {
+    const params = useParams();
+    const { userId, edit } = params;
+    console.log("params: ", params);
     return (
-        <>{userId ? <User userId={userId} history={history} /> : <Users />}</>
+        <>
+            {!userId ? (
+                <UsersListPage />
+            ) : edit ? (
+                <Edit id={userId} />
+            ) : (
+                <UserPage id={userId} />
+            )}
+        </>
     );
 };
-UsersList.propTypes = {
-    match: PropTypes.object,
-    history: PropTypes.object
-};
 
-export default UsersList;
+export default Users;

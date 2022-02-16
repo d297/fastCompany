@@ -1,42 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { paginate } from "../utils/paginate";
-import Pagination from "./pagination";
-import SearchStatus from "./searchStatus";
-import UserTable from "./userTable";
-import GroupList from "./groupList";
-import SearchPanel from "./searchPanel";
-import api from "../api";
+import { paginate } from "../../../utils/paginate";
+import Pagination from "../../common/pagination";
+import api from "../../../api";
+import GroupList from "../../common/groupList";
+import SearchStatus from "../../ui/searchStatus";
+import UserTable from "../../ui/usersTable";
 import _ from "lodash";
-
-const Users = () => {
+const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfession] = useState();
+    const [searchQuery, setSearchQuery] = useState("");
     const [selectedProf, setSelectedProf] = useState();
-    const [searchValue, setSearchValue] = useState("");
-
-    const [sortBy, setSortBy] = useState({ iter: "name", order: "asc" });
-
+    const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const pageSize = 8;
 
     const [users, setUsers] = useState();
-
     useEffect(() => {
         api.users.fetchAll().then((data) => setUsers(data));
     }, []);
-
     const handleDelete = (userId) => {
         setUsers(users.filter((user) => user._id !== userId));
     };
     const handleToggleBookMark = (id) => {
-        setUsers(
-            users.map((user) => {
-                if (user._id === id) {
-                    return { ...user, bookmark: !user.bookmark };
-                }
-                return user;
-            })
-        );
+        const newArray = users.map((user) => {
+            if (user._id === id) {
+                return { ...user, bookmark: !user.bookmark };
+            }
+            return user;
+        });
+        setUsers(newArray);
     };
 
     useEffect(() => {
@@ -45,53 +38,47 @@ const Users = () => {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedProf]);
-    useEffect(() => {
-        setSearchValue("");
-    }, [selectedProf]);
+    }, [selectedProf, searchQuery]);
 
     const handleProfessionSelect = (item) => {
+        if (searchQuery !== "") setSearchQuery("");
         setSelectedProf(item);
+    };
+    const handleSearchQuery = ({ target }) => {
+        setSelectedProf(undefined);
+        setSearchQuery(target.value);
     };
 
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
     };
-
     const handleSort = (item) => {
         setSortBy(item);
     };
+
     if (users) {
-        const usersOnProfFilter = () => {
-            return users.filter((user) => {
-                return (
-                    JSON.stringify(user.profession) ===
-                    JSON.stringify(selectedProf)
-                );
-            });
-        };
-        const filtredUsers = selectedProf
-            ? usersOnProfFilter(users)
-            : searchValue
-            ? users.filter((user) =>
-                  user.name.toLowerCase().includes(searchValue.toLowerCase())
+        const filteredUsers = searchQuery
+            ? users.filter(
+                  (user) =>
+                      user.name
+                          .toLowerCase()
+                          .indexOf(searchQuery.toLowerCase()) !== -1
+              )
+            : selectedProf
+            ? users.filter(
+                  (user) =>
+                      JSON.stringify(user.profession) ===
+                      JSON.stringify(selectedProf)
               )
             : users;
 
-        const count = filtredUsers.length;
-
+        const count = filteredUsers.length;
         const sortedUsers = _.orderBy(
-            filtredUsers,
+            filteredUsers,
             [sortBy.path],
             [sortBy.order]
         );
-        const handleSearchUsers = (e) => {
-            setSearchValue(e.target.value);
-            setSelectedProf();
-        };
-
         const usersCrop = paginate(sortedUsers, currentPage, pageSize);
-
         const clearFilter = () => {
             setSelectedProf();
         };
@@ -103,29 +90,30 @@ const Users = () => {
                         <GroupList
                             selectedItem={selectedProf}
                             items={professions}
-                            onItemsSelect={handleProfessionSelect}
-                            valueProperty="_id"
-                            contentProperty="name"
+                            onItemSelect={handleProfessionSelect}
                         />
                         <button
                             className="btn btn-secondary mt-2"
                             onClick={clearFilter}
                         >
+                            {" "}
                             Очистить
                         </button>
                     </div>
                 )}
                 <div className="d-flex flex-column">
                     <SearchStatus length={count} />
-                    <SearchPanel
-                        handleSearchUsers={handleSearchUsers}
-                        clearFilter={clearFilter}
-                        value={searchValue}
+                    <input
+                        type="text"
+                        name="searchQuery"
+                        placeholder="Search..."
+                        onChange={handleSearchQuery}
+                        value={searchQuery}
                     />
                     {count > 0 && (
                         <UserTable
-                            onSort={handleSort}
                             users={usersCrop}
+                            onSort={handleSort}
                             selectedSort={sortBy}
                             onDelete={handleDelete}
                             onToggleBookMark={handleToggleBookMark}
@@ -145,8 +133,8 @@ const Users = () => {
     }
     return "loading...";
 };
-Users.propTypes = {
+UsersListPage.propTypes = {
     users: PropTypes.array
 };
 
-export default Users;
+export default UsersListPage;
