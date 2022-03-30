@@ -7,6 +7,7 @@ import RadioField from "../../common/form/radioField";
 import MultySelectField from "../../common/form/multiSelectField";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
+import BackHistoryButton from "../../common/backButton";
 
 const Edit = ({ id }) => {
     const [userInfo, setUserInfo] = useState();
@@ -111,6 +112,7 @@ const Edit = ({ id }) => {
     if (userInfo) {
         return (
             <div className="container mt-5">
+                <BackHistoryButton />
                 <div className="row">
                     <div className="col-md-8 offset-md-2 shadow p-4">
                         <form onSubmit={handleSubmit}>

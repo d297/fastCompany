@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import api from "../../../api";
-import Qualitie from "../../ui/qualities/quality";
 
-import { Link } from "react-router-dom";
+import UserCard from "../../ui/userCard";
+import QualitiesCard from "../../ui/qualitiesCard";
+import MeetingCard from "../../ui/meetingCard";
+import Comments from "../../ui/comments";
 
 const UserPage = ({ id }) => {
     const [user, setUser] = useState();
@@ -11,24 +13,23 @@ const UserPage = ({ id }) => {
         api.users.getById(id).then((data) => {
             setUser(data);
         });
-        console.log(user);
     }, []);
-    setTimeout(() => {
-        console.log(user);
-    }, 5000);
+
     if (user) {
         return (
             <div>
-                <h1> {user.name}</h1>
-                <h2>Профессия: {user.profession.name}</h2>
-                {user.qualities.map((quality) => (
-                    <Qualitie key={quality._id} {...quality} />
-                ))}
-                <p>completedMeetings: {user.completedMeetings}</p>
-                <h2>Rate: {user.rate}</h2>
-                <Link to={`/users/${user._id}/edit`}>
-                    <button className="btn btn-primary">Изменить</button>
-                </Link>
+                <div className="container">
+                    <div className="row gutters-sm">
+                        <div className="col-md-4 mb-3">
+                            <UserCard user={user} />
+                            <QualitiesCard data={user.qualities} />
+                            <MeetingCard value={user.completedMeetings} />
+                        </div>
+                        <div className="col-md-8">
+                            <Comments />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
